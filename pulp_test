@@ -1,0 +1,115 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr  6 11:02:58 2017
+
+@author: huangshizhi
+参考网页
+http://benalexkeen.com/linear-programming-with-python-and-pulp-part-2/
+"""
+
+import pulp
+
+#变量及其约束条件，如上下界，是否为连续变量，取整数，或者0-1变量等
+x = pulp.LpVariable('x', lowBound=0, cat='Integer')
+y = pulp.LpVariable('y', lowBound=0, cat='Integer')
+
+#优化问题，最大化或者最小化
+my_lp_problem = pulp.LpProblem("My LP Problem", pulp.LpMaximize)
+
+# 目标函数 Objective function
+my_lp_problem += 4 * x + 3 * y, "Z"
+
+# 约束条件 Constraints
+my_lp_problem += 2 * y <= 25 - x
+my_lp_problem += 4 * y >= 2 * x - 8
+my_lp_problem += y <= 2 * x - 5
+
+#问题求解
+my_lp_problem.solve()
+
+
+'''
+打印解的状态，是否可行解，最优解等等
+Not Solved: Status prior to solving the problem.
+Optimal: An optimal solution has been found.
+Infeasible: There are no feasible solutions (e.g. if you set the constraints x <= 1 and x >=2).
+Unbounded: The constraints are not bounded, maximising the solution will tend towards infinity (e.g. if the only constraint was x >= 3).
+Undefined: The optimal solution may exist but may not have been found.
+'''
+
+pulp.LpStatus[my_lp_problem.status]
+
+
+#显示解
+for variable in my_lp_problem.variables():
+    print ("{} = {}".format(variable.name, variable.varValue))
+    
+#打印最优目标函数值    
+print (pulp.value(my_lp_problem.objective))
+print ("按照目标条件求得的最优值 = {}".format(4*14.5+3*5.25))
+
+
+'''
+http://benalexkeen.com/linear-programming-with-python-and-pulp-part-5/
+'''
+    
+import pandas as pd
+import pulp
+
+factories = pd.read_excel(r'D:\ad_portrait\project\pulp\factory_variables.xlsx',index_col =[0,1])
+
+demand  = pd.read_excel(r'D:\ad_portrait\project\pulp\monthly_demand.xlsx',index_col =[0])
+
+#变量及其约束条件
+production = pulp.LpVariable.dicts("production",
+                                     ((month, factory) for month, factory in factories.index),
+                                     lowBound=0,
+                                     cat='Integer')
+
+factory_status = pulp.LpVariable.dicts("factory_status",
+                                     ((month, factory) for month, factory in factories.index),
+                                     cat='Binary')
+#优化问题
+model = pulp.LpProblem("Cost minimising scheduling problem", pulp.LpMinimize)
+
+#优化目标
+model += pulp.lpSum(
+    [production[month, factory] * factories.loc[(month, factory), 'Variable_Costs'] for month, factory in factories.index]
+    + [factory_status[month, factory] * factories.loc[(month, factory), 'Fixed_Costs'] for month, factory in factories.index]
+)
+
+#约束条件
+months = demand.index
+for month in months:
+    model += production[(month, 'A')] + production[(month, 'B')] == demand.loc[month, 'Demand']
+    
+# Production in any month must be between minimum and maximum capacity, or zero.
+for month, factory in factories.index:
+    min_production = factories.loc[(month, factory), 'Min_Capacity']
+    max_production = factories.loc[(month, factory), 'Max_Capacity']
+    model += production[(month, factory)] >= min_production * factory_status[month, factory]
+    model += production[(month, factory)] <= max_production * factory_status[month, factory]    
+    
+# Factory B is off in May
+model += factory_status[5, 'B'] == 0
+model += production[5, 'B'] == 0
+   
+#求解                   
+model.solve()
+pulp.LpStatus[model.status]
+
+#解答
+output = []
+for month, factory in production:
+    var_output = {
+        'Month': month,
+        'Factory': factory,
+        'Production': production[(month, factory)].varValue,
+        'Factory Status': factory_status[(month, factory)].varValue
+    }
+    output.append(var_output)
+output_df = pd.DataFrame.from_records(output).sort_values(['Month', 'Factory'])
+output_df.set_index(['Month', 'Factory'], inplace=True)                   
+
+
+print(pulp.value(model.objective))
