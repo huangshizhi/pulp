@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun 19 20:29:59 2017
+
+@author: hsz
+座位安排问题
+"""
+
+"""
+A set partitioning model of a wedding seating problem
+Authors: Stuart Mitchell 2009
+参见
+http://pythonhosted.org/PuLP/CaseStudies/a_set_partitioning_problem.html
+"""
+
+import pulp 
+max_tables = 5
+max_table_size = 4
+guests = 'A B C D E F G I J K L M N O P Q R'.split()
+
+def happiness(table):
+    """
+    Find the happiness of the table
+    - by calculating the maximum distance between the letters
+    """
+    return abs(ord(table[0]) - ord(table[-1]))
+'''
+字符转化为相应的ASCII码：ord('a')
+t = ('M', 'N', 'Q')
+ord('M')=77
+ord('Q')= 81
+happiness(t)=4
+'''
+
+#create list of all possible tables,所有可能的组合
+possible_tables = [tuple(c) for c in pulp.allcombinations(guests,max_table_size)]
+
+#变量list
+x = pulp.LpVariable.dicts('table', possible_tables,lowBound = 0,upBound = 1,cat = pulp.LpInteger)
+
+#最优化问题
+seating_model = pulp.LpProblem("Wedding Seating Model", pulp.LpMinimize)
+
+#优化目标,所有距离之和最小
+seating_model += sum([happiness(table) * x[table] for table in possible_tables])
+#specify the maximum number of tables
+seating_model += sum([x[table] for table in possible_tables])
+
+#A guest must seated at one and only one table,每个人只能做一张桌子
+for guest in guests:
+    seating_model += sum([x[table] for table in possible_tables if guest in table]) == 1
+    
+seating_model.solve()
+print ("The choosen tables are out of a total of:")
+for table in possible_tables:
+    if x[table].value() == 1.0:
+        print (table)
+        
+    
