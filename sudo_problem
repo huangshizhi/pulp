@@ -3,6 +3,8 @@
 Created on Mon Jun 19 21:59:10 2017
 
 @author: hsz
+
+重点在于将非优化问题转换为0-1约束问题！
 """
 
 """
@@ -91,6 +93,14 @@ prob.writeLP("D:\study\LP\Sudoku.lp")
 # A file called sudokuout.txt is created/overwritten for writing to
 sudokuout = open('D:\study\LP\sudokuout.txt','w')
 
+'''
+#问题求解
+prob.solve()
+item_list =[]
+for v in prob.variables():
+    item_list.append((v.name,v.varValue))
+    print (v.name, "=", v.varValue)
+'''
 while True:
     prob.solve()
     # The status of the solution is printed to the screen
