@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 20 20:51:36 2017
+
+@author: hsz
+"""
+
+import pulp
+
+liuliang_list =[215.114,300.609,428.258,473.598,582.662,524.669,1070.399,
+                953.033,1087.181,1288.343,1689.727,5914.576,5095.457,7008.45,
+                8625.712,20100.764]
+
+liuliang_list =[215,300,428,473,582,524,1070,953,1087,1288,1689,
+                5914,5095,7008,8625,20100]
+
+#taocan_list = [200,300,500,800,1024,2048,3072,4096,5120,7168,11264,15360]
+
+taocan_list = [500,800,1024,2048,4096]
+
+price_list =[30,50,60,90,150]
+#choice_list =[0,1]
+#16*5*2 =160个
+possible_list =[]
+for a in liuliang_list:
+    for b in taocan_list:
+        #for c in choice_list:
+        #print((a,b))
+        possible_list.append((a,b))
+        
+
+iot_choices = pulp.LpVariable.dicts("Choice",(liuliang_list,taocan_list),0,1,pulp.LpInteger)
+
+#统计每个套餐使用情况
+
+amount_all = 0 #总金额
+for t in taocan_list:
+    liuliang_amount = 0
+    for l in liuliang_list:
+        taocan_count = sum(iot_choices[l][t]) #使用某个套餐流量的个数
+        if iot_choices[l][t] == 1:
+            liuliang_amount += sum(l)
+        amount_sum = taocan_count * 50 +(liuliang_amount -taocan_count*l)*0.2048
+    amount_all = amount_all + amount_sum
+
+import pandas as pd
+pdata = pd.DataFrame(iot_choices)
+
+#计算总价,需要先分组
+'''
+行数的和*套餐价格，如3个500M，总价为3*50
+判断流量之和l_sum是否超过套餐流量(t_sum)，若超过则金额为:3*50+(l_sum-t_sum)*0.2048
+最后把所有同类套餐价格汇总，得到amount_sum,最小化目标函数amount_sum
+'''
+
+
+#每列取值之和为1
+
+
+#优化目标
+
+
+#约束条件
