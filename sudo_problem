@@ -3,12 +3,18 @@
 Created on Mon Jun 19 21:59:10 2017
 
 @author: hsz
-数独是源自18世纪瑞士的一种数学游戏。是一种运用纸、笔进行演算的逻辑游戏。
-玩家需要根据9×9盘面上的已知数字，推理出所有剩余空格的数字，并满足每一行、每一列、每一个粗线宫（3*3）,即九宫格内的数字均含1-9，不能重复。
 
 重点在于将非优化问题转换为0-1约束问题！
-参见
+"""
+
+"""
+The Looping Sudoku Problem Formulation for the PuLP Modeller
+
+Authors: Antony Phillips, Dr Stuart Mitcehll
 http://pythonhosted.org/PuLP/CaseStudies/a_sudoku_problem.html
+数独是源自18世纪瑞士的一种数学游戏。是一种运用纸、笔进行演算的逻辑游戏。
+玩家需要根据9×9盘面上的已知数字，推理出所有剩余空格的数字，并满足每一行、每一列、
+每一个粗线宫（3*3）,即九宫格内的数字均含1-9，不能重复。
 """
 # Import PuLP modeler functions
 import pulp
@@ -38,6 +44,7 @@ choices = pulp.LpVariable.dicts("Choice",(Vals,Rows,Cols),0,1,pulp.LpInteger)
 prob += 0, "Arbitrary Objective Function"
 
 # A constraint ensuring that only one value can be in each square is created
+#每个位置row,col只能取一个值
 for r in Rows:
     for c in Cols:
         prob += pulp.lpSum([choices[v][r][c] for v in Vals]) == 1
@@ -45,13 +52,13 @@ for r in Rows:
 # The row, column and box constraints are added for each value
 for v in Vals:
     for r in Rows:
-        prob += pulp.lpSum([choices[v][r][c] for c in Cols]) == 1,""
+        prob += pulp.lpSum([choices[v][r][c] for c in Cols]) == 1,"列唯一"
 
     for c in Cols:
-        prob += pulp.lpSum([choices[v][r][c] for r in Rows]) == 1,""
+        prob += pulp.lpSum([choices[v][r][c] for r in Rows]) == 1,"行唯一"
 
     for b in Boxes:
-        prob += pulp.lpSum([choices[v][r][c] for (r,c) in b]) == 1,""
+        prob += pulp.lpSum([choices[v][r][c] for (r,c) in b]) == 1,"九宫格内唯一"
 
 # The starting numbers are entered as constraints
 prob += choices["5"]["1"]["1"] == 1,""
