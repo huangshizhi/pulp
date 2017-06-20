@@ -3,14 +3,11 @@
 Created on Mon Jun 19 21:59:10 2017
 
 @author: hsz
+数独是源自18世纪瑞士的一种数学游戏。是一种运用纸、笔进行演算的逻辑游戏。
+玩家需要根据9×9盘面上的已知数字，推理出所有剩余空格的数字，并满足每一行、每一列、每一个粗线宫（3*3）,即九宫格内的数字均含1-9，不能重复。
 
 重点在于将非优化问题转换为0-1约束问题！
-"""
-
-"""
-The Looping Sudoku Problem Formulation for the PuLP Modeller
-
-Authors: Antony Phillips, Dr Stuart Mitcehll
+参见
 http://pythonhosted.org/PuLP/CaseStudies/a_sudoku_problem.html
 """
 # Import PuLP modeler functions
