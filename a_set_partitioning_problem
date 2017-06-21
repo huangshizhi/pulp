@@ -81,4 +81,5 @@ for table in possible_tables:
     if x[table].value() == 1.0:
         print (table)
         
+print("最优解 = ", pulp.value(seating_model.objective))
     
