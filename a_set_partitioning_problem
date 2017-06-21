@@ -35,7 +35,15 @@ happiness(t)=4
 #create list of all possible tables,所有可能的组合
 possible_tables = [tuple(c) for c in pulp.allcombinations(guests,max_table_size)]
 
-#变量list
+
+'''
+变量dict,形如：
+ ('B', 'N', 'Q', 'R'): table_('B',_'N',_'Q',_'R'),
+ ('B', 'G', 'K', 'Q'): table_('B',_'G',_'K',_'Q'),
+ ('A', 'C', 'M', 'Q'): table_('A',_'C',_'M',_'Q'),
+ ('B', 'I', 'Q', 'R'): table_('B',_'I',_'Q',_'R'),
+'''
+
 x = pulp.LpVariable.dicts('table', possible_tables,lowBound = 0,upBound = 1,cat = pulp.LpInteger)
 
 #最优化问题
