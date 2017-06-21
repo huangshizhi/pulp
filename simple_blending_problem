@@ -42,3 +42,4 @@ for v in prob.variables():
     
     # The optimised objective function value is printed to the screen
 print ("Total Cost of Ingredients per can = ", value(prob.objective))
+
