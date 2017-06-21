@@ -23,10 +23,9 @@ def happiness(table):
     Find the happiness of the table
     - by calculating the maximum distance between the letters
     """
-    #return abs(ord(table[0]) - ord(table[-1]))
-    return (ord(table[0]) - ord(table[-1]))**3
+    return abs(ord(table[0]) - ord(table[-1]))
+    #return (ord(table[0]) - ord(table[-1]))**3
     
-happiness(('A', 'D', 'F', 'G'))
     
     
 '''
@@ -56,10 +55,12 @@ seating_model = pulp.LpProblem("Wedding Seating Model", pulp.LpMinimize)
 
 #优化目标,所有距离之和最小
 seating_model += sum([happiness(table) * x[table] for table in possible_tables])
-#specify the maximum number of tables
-seating_model += sum([x[table] for table in possible_tables])
 
-#A guest must seated at one and only one table,每个人只能做一张桌子
+#约束条件1:桌子桌数specify the maximum number of tables
+seating_model += sum([x[table] for table in possible_tables])  <= max_tables, "Maximum_number_of_tables"
+
+
+#约束条件2:A guest must seated at one and only one table,每个人只能做一张桌子
 for guest in guests:
     seating_model += sum([x[table] for table in possible_tables if guest in table]) == 1
     
