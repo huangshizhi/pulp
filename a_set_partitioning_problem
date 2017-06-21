@@ -1,16 +1,27 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jun 19 20:29:59 2017
-
 @author: hsz
 座位安排问题
-"""
 
-"""
+A set partitioning problem may be modelled by explicitly enumerating each possible subset(子集). 
+Though this approach does become intractable(棘手的) for large numbers of items (without using column generation) it does have the 
+advantage that the objective function co-efficients for the partitions 
+can be non-linear expressions (like happiness) and still allow this problem to be solved using Linear Programming.
+
+注意目标函数可以为非线性函数，如函数happiness()；
+通过枚举所有的可能集合，可通过线性规划来处理目标函数为非线性函数的情况！
+一个可行解为：
+('E', 'F', 'G') 
+('M', 'N', 'O')  
+('P', 'Q', 'R') 
+('A', 'B', 'C', 'D') 
+('I', 'J', 'K', 'L') 
 A set partitioning model of a wedding seating problem
 Authors: Stuart Mitchell 2009
 参见
 http://pythonhosted.org/PuLP/CaseStudies/a_set_partitioning_problem.html
+
 """
 
 import pulp 
