@@ -23,7 +23,12 @@ def happiness(table):
     Find the happiness of the table
     - by calculating the maximum distance between the letters
     """
-    return abs(ord(table[0]) - ord(table[-1]))
+    #return abs(ord(table[0]) - ord(table[-1]))
+    return (ord(table[0]) - ord(table[-1]))**3
+    
+happiness(('A', 'D', 'F', 'G'))
+    
+    
 '''
 字符转化为相应的ASCII码：ord('a')
 t = ('M', 'N', 'Q')
@@ -32,9 +37,8 @@ ord('Q')= 81
 happiness(t)=4
 '''
 
-#create list of all possible tables,所有可能的组合
+#create list of all possible tables,所有可能的桌子组合，形如：('A', 'D', 'F', 'G')
 possible_tables = [tuple(c) for c in pulp.allcombinations(guests,max_table_size)]
-
 
 '''
 变量dict,形如：
@@ -44,6 +48,7 @@ possible_tables = [tuple(c) for c in pulp.allcombinations(guests,max_table_size)
  ('B', 'I', 'Q', 'R'): table_('B',_'I',_'Q',_'R'),
 '''
 
+#变量名前缀'table'
 x = pulp.LpVariable.dicts('table', possible_tables,lowBound = 0,upBound = 1,cat = pulp.LpInteger)
 
 #最优化问题
